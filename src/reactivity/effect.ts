@@ -1,4 +1,5 @@
 import { extend } from '../shared'
+let activeEffect, shouldTrack
 class ReactiveEffect {
   private _fn: any
   deps = []
@@ -10,8 +11,12 @@ class ReactiveEffect {
     this.scheduler = scheduler
   }
   run() {
+    if (!this.active) return this._fn()
+    shouldTrack = true
     activeEffect = this
-    return this._fn()
+    const result = this._fn()
+    shouldTrack = false
+    return result
   }
   stop() {
     if (this.active) {
@@ -24,10 +29,10 @@ class ReactiveEffect {
     effect.deps.forEach((dep: any) => {
       dep.delete(effect)
     })
+    effect.deps.length = 0
   }
 }
 
-let activeEffect
 export const effect = (fn, options: any = {}) => {
   const _effect = new ReactiveEffect(fn, options.scheduler)
   extend(_effect, options)
@@ -38,8 +43,10 @@ export const effect = (fn, options: any = {}) => {
 }
 /**依赖收集 */
 const targetMap = new Map()
-
+/**是否收集依赖 */
+const isTracking = () => shouldTrack && activeEffect !== undefined
 export const track = (target, key) => {
+  if (!isTracking()) return
   // target -> key -> dep
   let depsMap = targetMap.get(target)
   if (!depsMap) {
@@ -51,7 +58,7 @@ export const track = (target, key) => {
     dep = new Set()
     depsMap.set(key, dep)
   }
-  if (!activeEffect) return
+  if (dep.has(activeEffect)) return
   dep.add(activeEffect)
   activeEffect.deps.push(dep)
 }
