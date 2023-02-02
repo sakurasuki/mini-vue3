@@ -43,8 +43,16 @@ export const effect = (fn, options: any = {}) => {
 }
 /**依赖收集 */
 const targetMap = new Map()
+
 /**是否收集依赖 */
-const isTracking = () => shouldTrack && activeEffect !== undefined
+export const isTracking = () => shouldTrack && activeEffect !== undefined
+
+export const trackEffects = dep => {
+  if (dep.has(activeEffect)) return
+  dep.add(activeEffect)
+  activeEffect.deps.push(dep)
+}
+
 export const track = (target, key) => {
   if (!isTracking()) return
   // target -> key -> dep
@@ -58,18 +66,21 @@ export const track = (target, key) => {
     dep = new Set()
     depsMap.set(key, dep)
   }
-  if (dep.has(activeEffect)) return
-  dep.add(activeEffect)
-  activeEffect.deps.push(dep)
+  trackEffects(dep)
 }
-/**触发依赖收集 */
-export const trigger = (target, key) => {
-  let depsMap = targetMap.get(target)
-  let dep = depsMap.get(key)
+
+export const triggerEffects = dep => {
   for (const effect of dep) {
     if (effect.scheduler) effect.scheduler()
     else effect.run()
   }
+}
+
+/**触发依赖收集 */
+export const trigger = (target, key) => {
+  let depsMap = targetMap.get(target)
+  let dep = depsMap.get(key)
+  triggerEffects(dep)
 }
 
 export const stop = runner => {
