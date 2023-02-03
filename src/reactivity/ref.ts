@@ -8,6 +8,7 @@ class RefImpl {
   private _value: any
   public dep
   private _rawValue: any
+  public __v_isRef = true
   constructor(value) {
     this._rawValue = value
     this._value = convert(value)
@@ -32,3 +33,7 @@ const tarckRefValue = ref => {
 }
 
 export const ref = value => new RefImpl(value)
+
+export const isRef = ref => !!ref.__v_isRef
+
+export const unRef = ref => (isRef(ref) ? ref.value : ref)
