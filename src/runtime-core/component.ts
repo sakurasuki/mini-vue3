@@ -1,7 +1,9 @@
+import { PublicInstanceProxyHandlers } from './componentPublicInstance'
 export const createComponentInstance = vnode => {
   const component = {
     vnode,
-    type: vnode.type
+    type: vnode.type,
+    setupState: {}
   }
   return component
 }
@@ -17,6 +19,7 @@ export const setupComponent = instance => {
 /**初始化状态组件 */
 const setupStateFulComponent = instance => {
   const Component = instance.type
+  instance.proxy = new Proxy({ _: instance }, PublicInstanceProxyHandlers)
   const { setup } = Component
   if (setup) {
     const setupResult = setup()
