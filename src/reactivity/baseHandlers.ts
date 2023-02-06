@@ -1,5 +1,5 @@
 import { track, trigger } from './effect'
-import { isObject, extend } from '../shared'
+import { isObject, extend } from '../shared/index'
 import { reactive, ReactiveFlags, readonly, shallowReadonly } from './reactive'
 export const createGetter = (isReadonly = false, shallow = false) => {
   return function get(target, key) {
