@@ -1,6 +1,7 @@
 import { createComponentInstance } from './component'
 import { setupComponent } from './component'
 import { ShapeFlags } from '../shared/ShapeFlags'
+import { Fragment, Text } from './vnode'
 export const render = (vnode, container) => {
   patch(vnode, container)
 }
@@ -11,9 +12,31 @@ export const render = (vnode, container) => {
  * @param container 容器
  */
 const patch = (vnode, container) => {
-  const { shapeFlag } = vnode
-  if (shapeFlag & ShapeFlags.ELEMENT) processElement(vnode, container)
-  else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) processComponent(vnode, container)
+  const { shapeFlag, type } = vnode
+  switch (type) {
+    case Fragment:
+      processFragment(vnode, container)
+      break
+    case Text:
+      processText(vnode, container)
+      break
+    default:
+      if (shapeFlag & ShapeFlags.ELEMENT) {
+        processElement(vnode, container)
+      } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
+        processComponent(vnode, container)
+      }
+      break
+  }
+}
+
+const processText = (vnode, container) => {
+  const { children } = vnode
+  const textNode = (vnode.el = document.createTextNode(children))
+  container.append(textNode)
+}
+const processFragment = (vnode, container) => {
+  mountChildren(vnode, container)
 }
 /**
  * 处理组件

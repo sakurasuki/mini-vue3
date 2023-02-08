@@ -32,7 +32,7 @@ export const mutableHandler = {
 
 export const readonlyHandler = {
   get: readonlyGet,
-  set(target, key, value) {
+  set(target, key) {
     console.warn(`${key} set失败，因为target是readonly`, target)
     return true
   }
