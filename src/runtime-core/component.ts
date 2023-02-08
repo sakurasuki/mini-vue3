@@ -2,13 +2,15 @@ import { PublicInstanceProxyHandlers } from './componentPublicInstance'
 import { initProps } from './componentProps'
 import { shallowReadonly } from '../reactivity/reactive'
 import { emit } from './componentEmit'
+import { initSlots } from './componentSlots'
 export const createComponentInstance = vnode => {
   const component = {
     vnode,
     type: vnode.type,
     setupState: {},
     props: {},
-    emit: () => {}
+    emit: () => {},
+    slots: {}
   }
   component.emit = emit.bind(null, component) as any
   return component
@@ -17,8 +19,7 @@ export const createComponentInstance = vnode => {
 /**初始化组件 */
 export const setupComponent = instance => {
   initProps(instance, instance.vnode.props)
-  //TODO
-  // initSlots();
+  initSlots(instance, instance.vnode.children)
   setupStateFulComponent(instance)
 }
 

@@ -1,6 +1,8 @@
 import { hasOwn } from '../shared/index'
+/** 组件原型上的一些方法实现*/
 const publicProperiesMap = {
-  $el: i => i.vnode.el
+  $el: instance => instance.vnode.el,
+  $slots: instance => instance.slots
 }
 
 export const PublicInstanceProxyHandlers = {
@@ -9,9 +11,11 @@ export const PublicInstanceProxyHandlers = {
     if (key in setupState) {
       return setupState[key]
     }
-    if (hasOwn(setupState, key)) return setupState[key]
-    else if (hasOwn(props, key)) return props[key]
-    /** 组件原型上的一些方法实现*/
+    if (hasOwn(setupState, key)) {
+      return setupState[key]
+    } else if (hasOwn(props, key)) {
+      return props[key]
+    }
     const publicGetter = publicProperiesMap[key]
     return publicGetter?.(instance)
   }
