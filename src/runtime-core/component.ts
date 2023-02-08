@@ -29,8 +29,10 @@ const setupStateFulComponent = instance => {
   instance.proxy = new Proxy({ _: instance }, PublicInstanceProxyHandlers)
   const { setup } = Component
   if (setup) {
+    setCurrentInstance(instance)
     /**使用shallowReadonly让props变成不可修改 */
     const setupResult = setup(shallowReadonly(instance.props), { emit: instance.emit })
+    currentInstance = null
     handleSetupResult(instance, setupResult)
   }
 }
@@ -56,4 +58,11 @@ const handleSetupResult = (instance, setupResult) => {
 const finishComponentSetup = instance => {
   const Component = instance.type
   instance.render = Component.render
+}
+let currentInstance = null
+/**获取组件实例对象 */
+export const getCurrentInstance = () => currentInstance
+
+export const setCurrentInstance = instance => {
+  currentInstance = instance
 }
