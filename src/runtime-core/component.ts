@@ -3,13 +3,17 @@ import { initProps } from './componentProps'
 import { shallowReadonly } from '../reactivity/reactive'
 import { emit } from './componentEmit'
 import { initSlots } from './componentSlots'
-export const createComponentInstance = vnode => {
+export const createComponentInstance = (vnode, parent) => {
+  console.log('createComponentInstance', parent)
+
   const component = {
     vnode,
     type: vnode.type,
     setupState: {},
     props: {},
     emit: () => {},
+    provides: parent ? parent.provides : {},
+    parent,
     slots: {}
   }
   component.emit = emit.bind(null, component) as any
