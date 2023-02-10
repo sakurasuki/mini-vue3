@@ -14,12 +14,15 @@ const createElement = type => {
  * @param key
  * @param val
  */
-const patchProp = (el, key, val) => {
+const patchProp = (el, key, peveVal, nextVal) => {
   const isOn = (key: string) => /^on[A-Z]/.test(key)
   if (isOn(key)) {
     const event = key.slice(2).toLowerCase()
-    el.addEventListener(event, val)
-  } else el.setAttribute(key, val)
+    el.addEventListener(event, nextVal)
+  } else {
+    if (nextVal === undefined || nextVal === null) el.removeAttribute(key)
+    else el.setAttribute(key, nextVal)
+  }
 }
 /**
  * 插入元素节点
