@@ -16,7 +16,7 @@ class RefImpl {
     this.dep = new Set()
   }
   get value() {
-    tarckRefValue(this)
+    trackRefValue(this)
     return this._value
   }
   set value(newVal) {
@@ -28,7 +28,7 @@ class RefImpl {
   }
 }
 
-const tarckRefValue = ref => {
+const trackRefValue = ref => {
   if (isTracking()) trackEffects(ref.dep)
 }
 

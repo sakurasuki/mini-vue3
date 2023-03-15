@@ -53,6 +53,7 @@ export const trackEffects = dep => {
   activeEffect.deps.push(dep)
 }
 
+/**依赖收集 */
 export const track = (target, key) => {
   if (!isTracking()) return
   // target -> key -> dep
