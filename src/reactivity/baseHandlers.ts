@@ -20,7 +20,6 @@ export const createSetter = () => {
     return res
   }
 }
-
 const get = createGetter()
 const set = createSetter()
 const readonlyGet = createGetter(true)
